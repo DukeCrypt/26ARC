@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>26Arc Vault - Ultimate Savings Platform</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Lock your USDC with time-based security on Arc Network. Disciplined savings with emergency exit option." />
+  <meta name="keywords" content="Arc Network, DeFi, Savings, Time-lock, USDC, Crypto Vault" />
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0b0f14;
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: rgba(255,255,255,0.92);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bg-glow{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      z-index:0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56,239,125,0.12), transparent 60%);
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 239, 125, 0.10), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.10), transparent 55%),
+        radial-gradient(circle at 50% 90%, rgba(248, 147, 251, 0.07), transparent 60%);
+      animation: float 22s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(30px, -50px) rotate(180deg); }
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    @keyframes rise {
+      to {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1152px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 48px;
+    }
+
+    .stack-6 { display: grid; gap: 1.5rem; }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: unset;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .glass-card, .stat-card, .header {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      border-radius: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .disconnect-btn {
+      padding: 0.6rem 1rem;
+      background: rgba(255, 107, 107, 0.18);
+      border: 1px solid rgba(255, 107, 107, 0.35);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.92);
+      font-weight: 650;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 0.9rem;
+      width: auto;
+      margin: 0;
+      box-shadow: none;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .disconnect-btn:hover { background: rgba(255, 107, 107, 0.26); transform: translateY(-1px); }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.92);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      font-weight: 650;
+    }
+    .social-link:hover { background: rgba(255, 255, 255, 0.09); transform: translateY(-1px); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.4rem 1.25rem;
+      text-align: left;
+      transition: all 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); }
+
+    .stat-icon { font-size: 2.2rem; margin-bottom: 0.75rem; opacity: 0.95; }
+    .stat-value { font-size: 1.6rem; font-weight: 850; margin-bottom: 0.25rem; }
+    .stat-label { font-size: 0.9rem; opacity: 0.8; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .glass-card { padding: 1.5rem; }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: 0.2px;
+    }
+
+    .balance-display {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .balance-amount {
+      font-size: 2.35rem;
+      font-weight: 900;
+      margin: 0.75rem 0 0.5rem 0;
+      letter-spacing: -0.3px;
+    }
+
+    .countdown-timer {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .countdown-item {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 0.75rem;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .countdown-number { font-size: 1.5rem; font-weight: 900; display: block; }
+    .countdown-label { font-size: 0.7rem; opacity: 0.75; text-transform: uppercase; }
+
+    .quick-deposits {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin: 0.8rem 0;
+    }
+
+    .quick-btn {
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      color: rgba(255,255,255,0.92);
+      font-weight: 750;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 0;
+      width: 100%;
+      text-transform: none;
+      letter-spacing: 0;
+      box-shadow: none;
+    }
+    .quick-btn:hover { background: rgba(255, 255, 255, 0.09); transform: translateY(-1px); }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.92);
+      font-size: 1rem;
+      font-weight: 650;
+      transition: all 0.2s ease;
+    }
+
+    input[type="number"]::placeholder { color: rgba(255,255,255,0.45); }
+    input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(56,239,125,0.55);
+      box-shadow: 0 0 0 3px rgba(56,239,125,0.12);
+      background: rgba(255,255,255,0.06);
+    }
+
+    button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 14px;
+      border: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+      margin: 0.5rem 0;
+      text-transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(99,102,241,0.95), rgba(168,85,247,0.95));
+      color: rgba(255,255,255,0.95);
+      box-shadow: 0 10px 25px rgba(99,102,241,0.18);
+    }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(99,102,241,0.25); }
+
+    .btn-success {
+      background: linear-gradient(135deg, rgba(17,153,142,0.95), rgba(56,239,125,0.95));
+      color: rgba(255,255,255,0.95);
+      box-shadow: 0 10px 25px rgba(56,239,125,0.16);
+    }
+    .btn-success:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(56,239,125,0.22); }
+
+    .btn-danger {
+      background: rgba(255,107,107,0.10);
+      border: 1px solid rgba(255,107,107,0.35);
+      color: rgba(255,107,107,0.95);
+      box-shadow: none;
+    }
+    .btn-danger:hover:not(:disabled) { background: rgba(255,107,107,0.16); transform: translateY(-2px); }
+
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .share-btn {
+      background: linear-gradient(135deg, rgba(29,161,242,0.95), rgba(13,141,206,0.95));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .tx-history { max-height: 300px; overflow-y: auto; margin-top: 0.75rem; -webkit-overflow-scrolling: touch; }
+
+    .tx-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      padding: 0.95rem;
+      border-radius: 14px;
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      gap: 0.75rem;
+    }
+    .tx-item:hover { background: rgba(255, 255, 255, 0.07); transform: translateY(-1px); }
+
+    .tx-left { flex: 1; min-width: 0; }
+    .tx-type { font-weight: 800; font-size: 0.95rem; margin-bottom: 0.25rem; }
+
+    .tx-hash {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .tx-hash a {
+      color: rgba(147,197,253,0.95);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .tx-hash a:hover { color: rgba(191,219,254,0.98); text-decoration: underline; }
+
+    .tx-right { text-align: right; flex: 0 0 auto; }
+    .tx-amount { font-weight: 900; font-size: 1.05rem; }
+    .tx-date { font-size: 0.8rem; opacity: 0.75; }
+
+    .success-modal {
+      display: none;
+      position: fixed;
+      z-index: 4000;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, rgba(56, 239, 125, 0.95), rgba(17, 153, 142, 0.95));
+      padding: 2.25rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: center;
+      min-width: 320px;
+      animation: modalPop 0.3s ease;
+    }
+
+    @keyframes modalPop {
+      0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .success-icon { font-size: 3.5rem; margin-bottom: 0.75rem; }
+    .success-title { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.35rem; }
+    .success-text { opacity: 0.92; margin-bottom: 1rem; }
+
+    .explorer-btn {
+      display: inline-block;
+      padding: 0.85rem 1.3rem;
+      background: rgba(255,255,255,0.95);
+      color: rgba(17,153,142,1);
+      border-radius: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+    .explorer-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+
+    .achievements { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+
+    .achievement {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      padding: 0.85rem;
+      border-radius: 16px;
+      text-align: center;
+      transition: all 0.2s ease;
+      opacity: 0.45;
+    }
+
+    .achievement.unlocked { opacity: 1; background: rgba(255, 255, 255, 0.08); animation: bounce 0.45s ease; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+    .achievement-icon { font-size: 2rem; margin-bottom: 0.35rem; }
+    .achievement-name { font-size: 0.78rem; font-weight: 750; opacity: 0.92; }
+
+    .apy-calculator, .lock-period-selector {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      padding: 1.1rem;
+      border-radius: 16px;
+      margin: 0.9rem 0;
+    }
+
+    .period-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin: 0.85rem 0;
+    }
+
+    .period-btn {
+      padding: 0.85rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .period-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+
+    .period-btn.active {
+      border-color: rgba(56,239,125,0.55);
+      background: rgba(56,239,125,0.10);
+      box-shadow: 0 0 0 3px rgba(56,239,125,0.08);
+    }
+
+    .period-days { font-size: 1.35rem; font-weight: 900; display: block; }
+    .period-apy { font-size: 0.86rem; color: rgba(56,239,125,0.95); font-weight: 850; }
+
+    .custom-days-input { margin-top: 0.7rem; }
+    .custom-days-input input { width: 100%; padding: 0.85rem; border-radius: 14px; }
+
+    .interest-breakdown {
+      background: rgba(56, 239, 125, 0.07);
+      padding: 1rem;
+      border-radius: 16px;
+      margin-top: 0.8rem;
+      border: 1px solid rgba(56, 239, 125, 0.18);
+    }
+
+    .interest-row { display: flex; justify-content: space-between; margin: 0.4rem 0; gap: 1rem; }
+    .interest-label { opacity: 0.8; }
+    .interest-value { font-weight: 900; color: rgba(56,239,125,0.95); }
+
+    .benefits { display: grid; gap: 0.75rem; margin-top: 0.8rem; }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 16px;
+    }
+
+    .benefit-icon { font-size: 1.8rem; opacity: 0.95; }
+    .benefit-text h4 { margin-bottom: 0.25rem; }
+    .benefit-text p { font-size: 0.9rem; opacity: 0.8; }
+
+    .faq-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      padding: 1.15rem;
+      border-radius: 16px;
+      margin-bottom: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .faq-item:hover { background: rgba(255,255,255,0.07); transform: translateY(-1px); }
+
+    .faq-question {
+      font-weight: 850;
+      font-size: 1.02rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .faq-answer { display: none; opacity: 0.9; margin-top: 0.65rem; line-height: 1.55; }
+    .faq-item.active .faq-answer { display: block; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      position: relative;
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin: 10% auto;
+      padding: 1.5rem;
+      border-radius: 18px;
+      width: 92%;
+      max-width: 460px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .close {
+      font-size: 2.2rem;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    .close:hover { opacity: 1; transform: rotate(90deg); }
+
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      margin: 0.7rem 0;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .wallet-option:hover { background: rgba(255,255,255,0.09); transform: translateY(-1px); }
+
+    .wallet-icon { font-size: 2.1rem; margin-right: 0.9rem; }
+
+    .network-warning {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: linear-gradient(135deg, rgba(239,68,68,0.95), rgba(220,38,38,0.95));
+      padding: 1rem;
+      text-align: center;
+      z-index: 3500;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .network-warning .nw-actions{
+      margin-top: 10px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nw-btn{
+      width:auto;
+      margin:0;
+      padding:0.75rem 1rem;
+      border-radius:12px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.95);
+      cursor:pointer;
+    }
+    .nw-btn:hover{ background: rgba(255,255,255,0.26); transform: translateY(-1px); }
+    .nw-btn.secondary{ background: rgba(0,0,0,0.18); border-color: rgba(255,255,255,0.18); }
+
+    #status {
+      padding: 1rem;
+      border-radius: 14px;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: 750;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .status-success { background: rgba(56, 239, 125, 0.12); border-color: rgba(56, 239, 125, 0.22); display: block; }
+    .status-error { background: rgba(255, 107, 107, 0.12); border-color: rgba(255, 107, 107, 0.22); display: block; }
+    .status-pending { background: rgba(255, 193, 7, 0.12); border-color: rgba(255, 193, 7, 0.22); display: block; }
+
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      border-top: 3px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem;
+      background: rgba(56, 239, 125, 0.08);
+      border: 1px solid rgba(56, 239, 125, 0.18);
+      border-radius: 14px;
+      margin-top: 0.9rem;
+    }
+
+    #walletAddress, .tx-hash a {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .note {
+      margin-top: 0.7rem;
+      padding: 0.85rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      opacity: 0.92;
+    }
+    .note b { opacity: 0.98; }
+
+    .footer-secure {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding-top: 1.25rem;
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 968px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .glass-card { padding: 1.25rem; }
+      .balance-amount { font-size: 2.05rem; }
+      .countdown-timer { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .period-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .quick-deposits { grid-template-columns: 1fr; }
+      button, .quick-btn, .period-btn { min-height: 48px; }
+    }
+
+    @media (max-width: 480px) {
+      .countdown-timer { 
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.5rem;
+      }
+      
+      .countdown-item {
+        padding: 0.6rem 0.4rem;
+      }
+      
+      .countdown-number { 
+        font-size: 1.2rem; 
+      }
+      
+      .countdown-label { 
+        font-size: 0.65rem; 
+      }
+
+      .header-left {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-animation"></div>
+
+  <div id="networkWarning" class="network-warning">
+    <strong>⚠️ Wrong Network</strong>
+    <p style="margin-top:6px;">
+      Please switch to <b>Arc Testnet</b> (Chain ID: <span id="expectedChainId">5042002</span>).
+      <span id="detectedChainText" style="opacity:.9;"></span>
+    </p>
+    <div class="nw-actions">
+      <button class="nw-btn" onclick="switchToArcTestnet()">Switch Network</button>
+      <button class="nw-btn secondary" onclick="hideNetworkWarning()">Dismiss</button>
+    </div>
+  </div>
+
+  <div id="walletModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-size: 1.25rem; font-weight: 900;">Connect Wallet</div>
+        <span class="close" onclick="closeWalletModal()">&times;</span>
+      </div>
+      <div id="walletOptions"></div>
+    </div>
+  </div>
+
+  <div id="successModal" class="success-modal">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Transaction Successful!</div>
+    <div class="success-text" id="successText">Your transaction has been confirmed</div>
+    <a id="explorerLink" href="#" target="_blank" class="explorer-btn">View on Arc Explorer 🔍</a>
+    <br><br>
+    <button onclick="closeSuccessModal()"
+      style="background:rgba(255,255,255,0.18); border:none; color:rgba(255,255,255,0.92); padding:0.8rem 1.4rem; border-radius:12px; cursor:pointer; font-weight:900;">
+      Close
+    </button>
+  </div>
+
+  <div class="page">
+    <div class="container stack-6">
+
+      <div class="header">
+        <div class="header-left">
+          <div class="logo">🔒 26Arc Vault</div>
+          <button id="disconnectBtn" class="disconnect-btn" onclick="disconnectWallet()" style="display:none;">
+            Disconnect 🚪
+          </button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; justify-content:flex-end;">
+          <a href="https://x.com/BrodaRev" target="_blank" class="social-link" rel="noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            @BrodaRev
+          </a>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="tvl">0.00 USDC</div>
+          <div class="stat-label">Total Value Locked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="userCount">0</div>
+          <div class="stat-label">Active Savers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔒</div>
+          <div class="stat-value" id="totalDeposits">0</div>
+          <div class="stat-label">Total Deposits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value" id="streakDays">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+
+        <div class="stack-6">
+          <div class="glass-card">
+            <div class="card-title">💼 Your Vault</div>
+
+            <button id="connectBtn" class="btn-primary" onclick="openWalletModal()">Connect Wallet</button>
+
+            <div id="walletAddress"
+              style="display:none; text-align:center; padding:0.9rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10); border-radius:14px; margin:0.9rem 0;">
+            </div>
+
+            <div class="balance-display">
+              <div style="opacity: 0.78;">Locked Balance</div>
+              <div class="balance-amount" id="balance">0.00 USDC</div>
+
+              <div class="countdown-timer">
+                <div class="countdown-item">
+                  <span class="countdown-number" id="days">00</span>
+                  <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="countdown-number" id="hours">00</span>
+                  <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="countdown-number" id="minutes">00</span>
+                  <span class="countdown-label">Mins</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="countdown-number" id="seconds">00</span>
+                  <span class="countdown-label">Secs</span>
+                </div>
+              </div>
+
+              <div style="margin-top: 0.9rem; font-size: 1.05rem; font-weight: 900;" id="lockStatus">-</div>
+            </div>
+
+            <div class="achievements">
+              <div class="achievement" id="ach1">
+                <div class="achievement-icon">🎯</div>
+                <div class="achievement-name">First Deposit</div>
+              </div>
+              <div class="achievement" id="ach2">
+                <div class="achievement-icon">💎</div>
+                <div class="achievement-name">100 USDC</div>
+              </div>
+              <div class="achievement" id="ach3">
+                <div class="achievement-icon">🔥</div>
+                <div class="achievement-name">7 Day Streak</div>
+              </div>
+              <div class="achievement" id="ach4">
+                <div class="achievement-icon">👑</div>
+                <div class="achievement-name">Top Saver</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">📊 Transaction History</div>
+            <div class="tx-history" id="txHistory">
+              <div style="text-align:center; opacity:0.65; padding:1.5rem;">No transactions yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-6">
+          <div class="glass-card">
+            <div class="card-title">💰 Deposit Funds</div>
+
+            <div class="lock-period-selector">
+              <div style="font-weight: 900; margin-bottom: 0.75rem;">📈 Savings Plan (Estimate)</div>
+
+              <div class="period-buttons">
+                <div class="period-btn active" onclick="selectPeriod(7, this)">
+                  <span class="period-days">7</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Days</span>
+                  <span class="period-apy">5% APY</span>
+                </div>
+                <div class="period-btn" onclick="selectPeriod(30, this)">
+                  <span class="period-days">30</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Days</span>
+                  <span class="period-apy">10% APY</span>
+                </div>
+                <div class="period-btn" onclick="selectPeriod(90, this)">
+                  <span class="period-days">90</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Days</span>
+                  <span class="period-apy">20% APY</span>
+                </div>
+                <div class="period-btn" onclick="selectPeriod(180, this)">
+                  <span class="period-days">180</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Days</span>
+                  <span class="period-apy">35% APY</span>
+                </div>
+                <div class="period-btn" onclick="selectPeriod(365, this)">
+                  <span class="period-days">365</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Days</span>
+                  <span class="period-apy">50% APY</span>
+                </div>
+                <div class="period-btn" onclick="enableCustomDays(this)">
+                  <span class="period-days">⚙️</span>
+                  <span style="font-size: 0.78rem; display: block; opacity:0.85;">Custom</span>
+                  <span class="period-apy">Variable</span>
+                </div>
+              </div>
+
+              <div class="custom-days-input" id="customDaysInput" style="display:none;">
+                <input type="number" id="customDays" placeholder="Enter days (min 7)" min="7" onchange="calculateCustomAPY()">
+              </div>
+
+              <div style="text-align:center; margin-top:0.6rem; font-weight:800; opacity:0.9;" id="selectedPeriodText">
+                Selected: 7 days (5% APY)
+              </div>
+
+              <div class="note">
+                <b>Heads up:</b> the APY + lock period here is an <b>estimate for your plan</b>.
+                Your <b>real unlock</b> is shown in the Vault countdown (on-chain unlock date).
+              </div>
+            </div>
+
+            <div class="quick-deposits">
+              <button class="quick-btn" onclick="quickDeposit(10)">10 USDC</button>
+              <button class="quick-btn" onclick="quickDeposit(50)">50 USDC</button>
+              <button class="quick-btn" onclick="quickDeposit(100)">100 USDC</button>
+            </div>
+
+            <input type="number" id="amount" placeholder="Enter custom amount" step="0.001" min="0" oninput="calculateInterest()">
+
+            <button id="depositBtn" class="btn-success" onclick="deposit()">Save Funds 💰</button>
+
+            <div class="interest-breakdown" id="interestBreakdown" style="display:none;">
+              <div style="font-weight: 900; margin-bottom: 0.6rem; text-align:center;">📊 Your Earnings (Estimate)</div>
+              <div class="interest-row">
+                <span class="interest-label">Principal:</span>
+                <span id="principalAmount">0 USDC</span>
+              </div>
+              <div class="interest-row">
+                <span class="interest-label">Interest Earned:</span>
+                <span class="interest-value" id="interestEarned">+0 USDC</span>
+              </div>
+              <div class="interest-row" style="border-top: 1px solid rgba(255,255,255,0.10); padding-top: 0.5rem; margin-top: 0.5rem;">
+                <span style="font-weight: 900;">Total at Unlock:</span>
+                <span class="interest-value" id="totalAmount" style="font-size: 1.05rem;">0 USDC</span>
+              </div>
+            </div>
+
+            <div class="apy-calculator">
+              <div style="font-weight: 900; margin-bottom: 0.65rem;">💡 APY Tiers (Estimate)</div>
+              <div style="font-size: 0.88rem; line-height: 1.6; opacity:0.92;">
+                <div>🟢 7-29 days: <strong>5% APY</strong></div>
+                <div>🔵 30-89 days: <strong>10% APY</strong></div>
+                <div>🟣 90-179 days: <strong>20% APY</strong></div>
+                <div>🟠 180-364 days: <strong>35% APY</strong></div>
+                <div>🔴 365+ days: <strong>50% APY</strong></div>
+              </div>
+            </div>
+
+            <button class="share-btn btn-primary" onclick="shareOnTwitter()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              Share Your Savings
+            </button>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">💸 Withdraw Funds</div>
+
+            <input type="number" id="withdrawAmount" placeholder="Enter amount" step="0.001" min="0">
+
+            <button id="withdrawBtn" class="btn-success" onclick="withdraw()">Standard Withdraw</button>
+            <button id="emergencyBtn" class="btn-danger" onclick="emergencyExit()">⚠️ Emergency Exit (10% Fee)</button>
+
+            <div id="status"></div>
+
+            <div class="security-badge">
+              <span style="font-size: 1.35rem;">🛡️</span>
+              <span style="font-weight: 900;">Secured by Arc Network</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-title">🌟 Why Save Here?</div>
+        <div class="benefits">
+          <div class="benefit-item">
+            <div class="benefit-icon">🔒</div>
+            <div class="benefit-text">
+              <h4>Time-Lock Security</h4>
+              <p>Your funds stay locked until your on-chain unlock date</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">💎</div>
+            <div class="benefit-text">
+              <h4>No Hidden Fees</h4>
+              <p>Standard withdrawals are free after the unlock date</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">⚡</div>
+            <div class="benefit-text">
+              <h4>Instant Deposits</h4>
+              <p>Funds lock immediately once confirmed</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">🌐</div>
+            <div class="benefit-text">
+              <h4>Built on Arc</h4>
+              <p>Stable fees and deterministic finality</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-title">❓ Frequently Asked Questions</div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">How does the time-lock work?<span>+</span></div>
+          <div class="faq-answer">
+            When you deposit funds, they're locked in a smart contract until the on-chain unlock date. You can withdraw without fees after this date. You can also use emergency exit with a 10% fee.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Is my money safe?<span>+</span></div>
+          <div class="faq-answer">
+            Funds are secured in a smart contract on Arc. You can verify transactions on the explorer. Only your wallet can withdraw.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">What's the 10% emergency fee?<span>+</span></div>
+          <div class="faq-answer">
+            Emergency exit lets you withdraw early with a 10% fee.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Do I earn interest on my savings?<span>+</span></div>
+          <div class="faq-answer">
+            The interest/APY shown is an estimate for planning. Future versions may integrate yield strategies.
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-secure">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="opacity:0.95">
+          <path d="M12 2l8 4v6c0 5-3.4 9.7-8 10-4.6-.3-8-5-8-10V6l8-4z"/>
+        </svg>
+        <span>Secured by Arc Network</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    // 🔥 IMPORTANT: Replace with your deployed contract address
+    const CONTRACT = "0x918D9a61C771eE92876014bF596dd2B8BCE460e6";
+    
+    const CHAIN_ID = 5042002;
+    const CHAIN_ID_HEX = "0x4cef52";
+    const EXPLORER = "https://testnet.arcscan.app";
+    const RPC_URL = "https://rpc.testnet.arc.network";
+    const NATIVE_SYMBOL = "USDC";
+
+    // ==================== CONTRACT ABI ====================
+    const ABI = [
+      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
+      {"inputs":[],"name":"FundsStillLocked","type":"error"},
+      {"inputs":[],"name":"InsufficientBalance","type":"error"},
+      {"inputs":[],"name":"InvalidAmount","type":"error"},
+      {"inputs":[],"name":"InvalidLockPeriod","type":"error"},
+      {"inputs":[],"name":"NoBalance","type":"error"},
+      {"inputs":[],"name":"NoFeesToCollect","type":"error"},
+      {"inputs":[],"name":"OnlyOwner","type":"error"},
+      {"inputs":[],"name":"TransferFailed","type":"error"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"unlockDate","type":"uint256"}],"name":"Deposit","type":"event"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"EmergencyExit","type":"event"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesCollected","type":"event"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"newUnlockDate","type":"uint256"}],"name":"UnlockDateExtended","type":"event"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawal","type":"event"},
+      {"inputs":[],"name":"EMERGENCY_FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"collectFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"name":"depositWithCustomLock","outputs":[],"stateMutability":"payable","type":"function"},
+      {"inputs":[],"name":"emergencyExit","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"uint256","name":"_additionalDays","type":"uint256"}],"name":"extendGlobalUnlockDate","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"getStats","outputs":[{"internalType":"uint256","name":"tvl","type":"uint256"},{"internalType":"uint256","name":"depositors","type":"uint256"},{"internalType":"uint256","name":"fees","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTimeUntilUnlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"getTotalValueLocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserUnlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasDeposited","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"isLocked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"totalDepositors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"totalFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[],"name":"unlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userUnlockDates","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[],"name":"withdrawAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"stateMutability":"payable","type":"receive"}
+    ];
+
+    // ==================== STATE VARIABLES ====================
+    let provider, signer, contract, userAddress, statsContract;
+    let unlockTimestamp = 0;
+    let transactions = [];
+    let streakDays = 0;
+    let selectedLockDays = 7;
+    let selectedAPY = 5;
+    let countdownInterval = null;
+    let hasTriedConnect = false;
+
+    // ==================== UI HELPERS ====================
+    function setConnectButtonState(state) {
+      const btn = document.getElementById("connectBtn");
+      if (!btn) return;
+
+      if (state === "loading") {
+        btn.disabled = true;
+        btn.innerHTML = `Connecting <span class="loader"></span>`;
+        btn.onclick = () => {};
+        return;
+      }
+
+      if (state === "connect") {
+        btn.disabled = false;
+        btn.innerText = "Connect Wallet";
+        btn.onclick = () => openWalletModal();
+        return;
+      }
+
+      if (state === "switch") {
+        btn.disabled = false;
+        btn.innerText = "Switch to Arc Testnet";
+        btn.onclick = () => switchToArcTestnet();
+        return;
+      }
+
+      if (state === "connected") {
+        btn.disabled = true;
+        btn.innerText = "Connected ✅";
+        btn.onclick = () => {};
+        return;
+      }
+    }
+
+    function showNetworkWarning(detectedChainId) {
+      if (!hasTriedConnect && !userAddress) return;
+
+      const el = document.getElementById("networkWarning");
+      const detected = document.getElementById("detectedChainText");
+      if (detectedChainId != null) {
+        detected.innerText = ` (Detected: ${detectedChainId})`;
+      } else {
+        detected.innerText = "";
+      }
+      el.style.display = "block";
+
+      disableActions(true);
+      setConnectButtonState("switch");
+    }
+
+    function hideNetworkWarning() {
+      document.getElementById("networkWarning").style.display = "none";
+      disableActions(false);
+      if (!userAddress) setConnectButtonState("connect");
+    }
+
+    function disableActions(disable) {
+      const d = document.getElementById("depositBtn");
+      const w = document.getElementById("withdrawBtn");
+      const e = document.getElementById("emergencyBtn");
+      if (d) d.disabled = disable;
+      if (w) w.disabled = disable;
+      if (e) e.disabled = disable;
+    }
+
+    // ==================== MULTI-WALLET PROVIDER SELECTION ====================
+    function getInjectedProviders() {
+      const eth = window.ethereum;
+      if (!eth) return [];
+      if (Array.isArray(eth.providers) && eth.providers.length) return eth.providers;
+      return [eth];
+    }
+
+    function pickProviderByName(name) {
+      const providers = getInjectedProviders();
+      const lower = (name || "").toLowerCase();
+
+      const isMM = p => !!p.isMetaMask;
+      const isCB = p => !!p.isCoinbaseWallet;
+      const isTrust = p => !!p.isTrust;
+
+      if (lower.includes("metamask")) return providers.find(isMM) || providers[0];
+      if (lower.includes("coinbase")) return providers.find(isCB) || providers[0];
+      if (lower.includes("trust")) return providers.find(isTrust) || providers[0];
+
+      return providers[0];
+    }
+
+    // ==================== NETWORK SWITCHING ====================
+    async function switchToArcTestnet() {
+      if (!window.ethereum) {
+        alert("No wallet detected. Install a browser wallet.");
+        return false;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: CHAIN_ID_HEX }],
+        });
+        return true;
+      } catch (err) {
+        if (err && err.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: CHAIN_ID_HEX,
+                chainName: "Arc Testnet",
+                nativeCurrency: { name: NATIVE_SYMBOL, symbol: NATIVE_SYMBOL, decimals: 18 },
+                rpcUrls: [RPC_URL],
+                blockExplorerUrls: [EXPLORER],
+              }],
+            });
+            return true;
+          } catch (e) {
+            console.error(e);
+            alert("Could not add Arc Testnet. Please add it manually in your wallet.");
+            return false;
+          }
+        }
+        console.error(err);
+        alert("Could not switch network. Please switch to Arc Testnet in your wallet.");
+        return false;
+      }
+    }
+
+    async function getCurrentChainId(p) {
+      try {
+        const chainIdHex = await p.request({ method: "eth_chainId" });
+        return parseInt(chainIdHex, 16);
+      } catch (e) {
+        const tmp = new ethers.providers.Web3Provider(p);
+        const net = await tmp.getNetwork();
+        return net.chainId;
+      }
+    }
+
+    async function ensureCorrectNetwork(p) {
+      const chainId = await getCurrentChainId(p);
+      if (chainId !== CHAIN_ID) {
+        showNetworkWarning(chainId);
+        return false;
+      }
+      hideNetworkWarning();
+      return true;
+    }
+
+    // ==================== PARTICLES ANIMATION ====================
+    function createParticles() {
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.left = Math.random() * 100 + "%";
+        particle.style.width = particle.style.height = (Math.random() * 5 + 2) + "px";
+        particle.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        particle.style.animationDelay = (Math.random() * 5) + "s";
+        document.querySelector(".bg-animation").appendChild(particle);
+      }
+    }
+    createParticles();
+
+    // ==================== SAVINGS PLAN SELECTION ====================
+    function selectPeriod(days, element) {
+      selectedLockDays = days;
+
+      if (days < 30) selectedAPY = 5;
+      else if (days < 90) selectedAPY = 10;
+      else if (days < 180) selectedAPY = 20;
+      else if (days < 365) selectedAPY = 35;
+      else selectedAPY = 50;
+
+      document.querySelectorAll(".period-btn").forEach(btn => btn.classList.remove("active"));
+      element.classList.add("active");
+      document.getElementById("selectedPeriodText").innerText = `Selected: ${days} days (${selectedAPY}% APY)`;
+      document.getElementById("customDaysInput").style.display = "none";
+      calculateInterest();
+    }
+
+    function enableCustomDays(element) {
+      document.querySelectorAll(".period-btn").forEach(btn => btn.classList.remove("active"));
+      element.classList.add("active");
+      document.getElementById("customDaysInput").style.display = "block";
+      document.getElementById("customDays").focus();
+    }
+
+    function calculateCustomAPY() {
+      const days = parseInt(document.getElementById("customDays").value);
+      if (days < 7) {
+        alert("Minimum lock period is 7 days!");
+        document.getElementById("customDays").value = 7;
+        return;
+      }
+
+      selectedLockDays = days;
+      if (days < 30) selectedAPY = 5;
+      else if (days < 90) selectedAPY = 10;
+      else if (days < 180) selectedAPY = 20;
+      else if (days < 365) selectedAPY = 35;
+      else selectedAPY = 50;
+
+      document.getElementById("selectedPeriodText").innerText = `Selected: ${days} days (${selectedAPY}% APY)`;
+      calculateInterest();
+    }
+
+    function calculateInterest() {
+      const amount = parseFloat(document.getElementById("amount").value) || 0;
+      if (amount <= 0) {
+        document.getElementById("interestBreakdown").style.display = "none";
+        return;
+      }
+
+      const interest = (amount * selectedAPY / 100 * selectedLockDays / 365);
+      const total = amount + interest;
+
+      document.getElementById("principalAmount").innerText = amount.toFixed(2) + ` ${NATIVE_SYMBOL}`;
+      document.getElementById("interestEarned").innerText = "+" + interest.toFixed(2) + ` ${NATIVE_SYMBOL}`;
+      document.getElementById("totalAmount").innerText = total.toFixed(2) + ` ${NATIVE_SYMBOL}`;
+      document.getElementById("interestBreakdown").style.display = "block";
+    }
+
+    function quickDeposit(amount) {
+      document.getElementById("amount").value = amount;
+      calculateInterest();
+    }
+
+    // ==================== WALLET MODAL ====================
+    const wallets = [
+      { name: "MetaMask", icon: "🦊", check: (p) => !!p.isMetaMask },
+      { name: "Coinbase", icon: "💼", check: (p) => !!p.isCoinbaseWallet },
+      { name: "Trust", icon: "🛡️", check: (p) => !!p.isTrust },
+      { name: "Browser Wallet", icon: "🌐", check: (p) => !!p }
+    ];
+
+    function openWalletModal() {
+      const modal = document.getElementById("walletModal");
+      const opts = document.getElementById("walletOptions");
+      opts.innerHTML = "";
+
+      const providers = getInjectedProviders();
+      if (!providers.length) {
+        opts.innerHTML = '<div style="text-align:center;padding:1.6rem;opacity:0.85;">No wallet detected</div>';
+        modal.style.display = "block";
+        return;
+      }
+
+      const availableWallets = [];
+      for (const w of wallets) {
+        const match = providers.find(p => w.check(p));
+        if (match) availableWallets.push(w);
+      }
+
+      if (!availableWallets.find(w => w.name === "Browser Wallet")) {
+        availableWallets.push(wallets[3]);
+      }
+
+      availableWallets.forEach(w => {
+        const div = document.createElement("div");
+        div.className = "wallet-option";
+        div.innerHTML = `<span class="wallet-icon">${w.icon}</span><span class="wallet-name" style="font-size:1.05rem;font-weight:900;">${w.name}</span>`;
+        div.onclick = () => connectWallet(w.name);
+        opts.appendChild(div);
+      });
+
+      modal.style.display = "block";
+    }
+
+    function closeWalletModal() {
+      document.getElementById("walletModal").style.display = "none";
+    }
+
+    window.onclick = e => {
+      if (e.target === document.getElementById("walletModal")) closeWalletModal();
+    };
+
+    // ==================== STATS ====================
+    async function initializeStats() {
+      try {
+        const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+        statsContract = new ethers.Contract(CONTRACT, ABI, statsProvider);
+        await updateStats();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function updateStats() {
+      try {
+        const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+        const statsContractRead = new ethers.Contract(CONTRACT, ABI, statsProvider);
+        
+        const stats = await statsContractRead.getStats();
+        const tvl = parseFloat(ethers.utils.formatEther(stats.tvl));
+        
+        document.getElementById("tvl").innerText = tvl.toFixed(2) + ` ${NATIVE_SYMBOL}`;
+        document.getElementById("userCount").innerText = stats.depositors.toString();
+        document.getElementById("totalDeposits").innerText = stats.depositors.toString();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ==================== WALLET CONNECTION ====================
+    async function connectWallet(walletName) {
+      try {
+        hasTriedConnect = true;
+        setConnectButtonState("loading");
+        closeWalletModal();
+
+        if (!window.ethereum) {
+          setConnectButtonState("connect");
+          return alert("No wallet detected.");
+        }
+
+        const chosen = pickProviderByName(walletName);
+
+        await chosen.request({ method: "eth_requestAccounts" });
+
+        const ok = await ensureCorrectNetwork(chosen);
+        if (!ok) {
+          const switched = await switchToArcTestnet();
+          if (!switched) {
+            setConnectButtonState("switch");
+            return;
+          }
+          const ok2 = await ensureCorrectNetwork(chosen);
+          if (!ok2) {
+            setConnectButtonState("switch");
+            return;
+          }
+        }
+
+        provider = new ethers.providers.Web3Provider(chosen);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        contract = new ethers.Contract(CONTRACT, ABI, signer);
+
+        setConnectButtonState("connected");
+        document.getElementById("disconnectBtn").style.display = "inline-flex";
+
+        const addr = document.getElementById("walletAddress");
+        addr.innerText = `${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+        addr.style.display = "block";
+
+        await updateBalance();
+        await updateUnlockDate();
+        startCountdown();
+        loadTransactionHistory();
+        loadStreak();
+
+        setStatus("✅ Connected!", "success");
+        unlockAchievement("ach1");
+      } catch (e) {
+        console.error(e);
+        setConnectButtonState("connect");
+        alert("Failed: " + (e?.message || e));
+      }
+    }
+
+    function disconnectWallet() {
+      if (confirm("Disconnect wallet?")) location.reload();
+    }
+
+    // ==================== CHAIN/ACCOUNT CHANGE HANDLING ====================
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", async () => {
+        try {
+          const providers = getInjectedProviders();
+          const chosen = providers[0];
+          provider = new ethers.providers.Web3Provider(chosen);
+
+          const chainId = await getCurrentChainId(chosen);
+          if (chainId !== CHAIN_ID) {
+            showNetworkWarning(chainId);
+            setStatus("⚠️ Wrong network. Please switch to Arc Testnet.", "error");
+            return;
+          } else {
+            hideNetworkWarning();
+            setStatus("✅ Connected to Arc Testnet", "success");
+          }
+
+          if (userAddress) {
+            signer = provider.getSigner();
+            contract = new ethers.Contract(CONTRACT, ABI, signer);
+            await updateBalance();
+            await updateUnlockDate();
+            startCountdown();
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      window.ethereum.on("accountsChanged", () => location.reload());
+    }
+
+    // ==================== VAULT LOGIC ====================
+    async function updateBalance() {
+      try {
+        if (!contract || !userAddress) return;
+
+        const chosen = getInjectedProviders()[0];
+        const chainId = await getCurrentChainId(chosen);
+        if (chainId !== CHAIN_ID) {
+          showNetworkWarning(chainId);
+          return;
+        }
+
+        const bal = await contract.getBalance(userAddress);
+        const balanceValue = parseFloat(ethers.utils.formatEther(bal));
+
+        const depositInfo = localStorage.getItem(`arc_vault_${CONTRACT}_deposit_${userAddress}`);
+        if (depositInfo) {
+          const info = JSON.parse(depositInfo);
+          const interest = parseFloat(info.interest || "0");
+          document.getElementById("balance").innerText =
+            `${balanceValue.toFixed(2)} ${NATIVE_SYMBOL} (+${interest.toFixed(2)} est.)`;
+        } else {
+          document.getElementById("balance").innerText = balanceValue.toFixed(2) + ` ${NATIVE_SYMBOL}`;
+        }
+
+        if (balanceValue >= 100) unlockAchievement("ach2");
+      } catch (e) {
+        console.error(e);
+        document.getElementById("balance").innerText = "Error loading";
+      }
+    }
+
+    async function updateUnlockDate() {
+      try {
+        if (!contract || !userAddress) return;
+
+        const chosen = getInjectedProviders()[0];
+        const chainId = await getCurrentChainId(chosen);
+        if (chainId !== CHAIN_ID) {
+          showNetworkWarning(chainId);
+          return;
+        }
+
+        const ts = await contract.getUserUnlockDate(userAddress);
+        unlockTimestamp = ts.toNumber();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
+        if (unlockTimestamp === 0) return;
+
+        const now = Math.floor(Date.now() / 1000);
+        const diff = unlockTimestamp - now;
+
+        if (diff <= 0) {
+          document.getElementById("days").innerText = "00";
+          document.getElementById("hours").innerText = "00";
+          document.getElementById("minutes").innerText = "00";
+          document.getElementById("seconds").innerText = "00";
+          document.getElementById("lockStatus").innerText = "🔓 Unlocked";
+          document.getElementById("lockStatus").style.color = "rgba(56,239,125,0.95)";
+          return;
+        }
+
+        const d = Math.floor(diff / 86400);
+        const h = Math.floor((diff % 86400) / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+
+        document.getElementById("days").innerText = String(d).padStart(2, "0");
+        document.getElementById("hours").innerText = String(h).padStart(2, "0");
+        document.getElementById("minutes").innerText = String(m).padStart(2, "0");
+        document.getElementById("seconds").innerText = String(s).padStart(2, "0");
+        document.getElementById("lockStatus").innerText = "🔒 Locked";
+        document.getElementById("lockStatus").style.color = "rgba(255,107,107,0.95)";
+      }, 1000);
+    }
+
+    async function deposit() {
+      try {
+        if (!contract || !signer) return alert("Connect wallet!");
+        const amt = document.getElementById("amount").value;
+        if (!amt || parseFloat(amt) <= 0) return alert("Enter amount!");
+
+        const chosen = getInjectedProviders()[0];
+        const chainId = await getCurrentChainId(chosen);
+        if (chainId !== CHAIN_ID) {
+          showNetworkWarning(chainId);
+          return alert("Switch to Arc Testnet!");
+        }
+
+        const interest = (parseFloat(amt) * selectedAPY / 100 * selectedLockDays / 365);
+        const total = parseFloat(amt) + interest;
+
+        const confirmMsg =
+          `Lock ${amt} ${NATIVE_SYMBOL}?\n\n` +
+          `Plan (Estimate):\n• ${selectedLockDays} days @ ${selectedAPY}% APY\n• Est. interest: +${interest.toFixed(2)} ${NATIVE_SYMBOL}\n• Est. total: ${total.toFixed(2)} ${NATIVE_SYMBOL}\n\n` +
+          `Note: Planning numbers are estimates. Unlock is based on on-chain unlock date.`;
+
+        if (!confirm(confirmMsg)) return;
+
+        setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
+
+        const tx = await contract.depositWithCustomLock(selectedLockDays, {
+          value: ethers.utils.parseEther(amt)
+        });
+
+        setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
+        const receipt = await tx.wait();
+
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+        setStatus("✅ Deposited!", "success");
+        showSuccessModal(tx.hash, "Deposit", amt);
+
+        const depositInfo = {
+          amount: amt,
+          lockDays: selectedLockDays,
+          apy: selectedAPY,
+          interest: interest.toFixed(2),
+          createdAt: new Date().toISOString()
+        };
+        localStorage.setItem(`arc_vault_${CONTRACT}_deposit_${userAddress}`, JSON.stringify(depositInfo));
+
+        addTransaction("Deposit", amt, new Date(), tx.hash);
+
+        document.getElementById("amount").value = "";
+        document.getElementById("interestBreakdown").style.display = "none";
+
+        await updateBalance();
+        await updateUnlockDate();
+        await updateStats();
+        updateStreak();
+      } catch (e) {
+        console.error(e);
+        let errorMsg = "❌ Transaction failed: ";
+        
+        if (e.code === 4001) {
+          errorMsg += "User rejected transaction";
+        } else if (e.code === -32603) {
+          errorMsg += "Insufficient funds for gas";
+        } else {
+          errorMsg += (e?.reason || e?.message || "Unknown error");
+        }
+        
+        setStatus(errorMsg, "error");
+      }
+    }
+
+    async function withdraw() {
+      try {
+        if (!contract) return alert("Connect wallet!");
+        const amt = document.getElementById("withdrawAmount").value;
+        if (!amt || parseFloat(amt) <= 0) return alert("Enter amount!");
+
+        const chosen = getInjectedProviders()[0];
+        const chainId = await getCurrentChainId(chosen);
+        if (chainId !== CHAIN_ID) {
+          showNetworkWarning(chainId);
+          return alert("Switch to Arc Testnet!");
+        }
+
+        const bal = await contract.getBalance(userAddress);
+        const balanceValue = parseFloat(ethers.utils.formatEther(bal));
+        if (parseFloat(amt) > balanceValue) {
+          return alert(`Insufficient balance. You have ${balanceValue.toFixed(2)} ${NATIVE_SYMBOL}`);
+        }
+
+        if (!confirm(`Withdraw ${amt} ${NATIVE_SYMBOL}?`)) return;
+
+        setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
+        const tx = await contract.withdraw(ethers.utils.parseEther(amt));
+        
+        setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
+        await tx.wait();
+
+        setStatus("✅ Withdrawn!", "success");
+        showSuccessModal(tx.hash, "Withdraw", amt);
+
+        addTransaction("Withdraw", amt, new Date(), tx.hash);
+
+        document.getElementById("withdrawAmount").value = "";
+
+        await updateBalance();
+        await updateStats();
+      } catch (e) {
+        console.error(e);
+        let errorMsg = "❌ Transaction failed: ";
+        
+        if (e.code === 4001) {
+          errorMsg += "User rejected transaction";
+        } else if (e.code === -32603) {
+          errorMsg += "Insufficient funds for gas";
+        } else {
+          errorMsg += (e?.reason || e?.message || "Unknown error");
+        }
+        
+        setStatus(errorMsg, "error");
+      }
+    }
+
+    async function emergencyExit() {
+      try {
+        if (!contract) return alert("Connect wallet!");
+        if (!confirm("⚠️ 10% fee! Continue?")) return;
+
+        const chosen = getInjectedProviders()[0];
+        const chainId = await getCurrentChainId(chosen);
+        if (chainId !== CHAIN_ID) {
+          showNetworkWarning(chainId);
+          return alert("Switch to Arc Testnet!");
+        }
+
+        setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
+        const tx = await contract.emergencyExit();
+        
+        setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
+        await tx.wait();
+
+        setStatus("✅ Exit done (10% fee)", "success");
+        showSuccessModal(tx.hash, "Emergency Exit", "All");
+
+        addTransaction("Emergency Exit", "All", new Date(), tx.hash);
+
+        await updateBalance();
+        await updateStats();
+      } catch (e) {
+        console.error(e);
+        let errorMsg = "❌ Transaction failed: ";
+        
+        if (e.code === 4001) {
+          errorMsg += "User rejected transaction";
+        } else if (e.code === -32603) {
+          errorMsg += "Insufficient funds for gas";
+        } else {
+          errorMsg += (e?.reason || e?.message || "Unknown error");
+        }
+        
+        setStatus(errorMsg, "error");
+      }
+    }
+
+    // ==================== TRANSACTIONS ====================
+    function addTransaction(type, amount, date, txHash) {
+      transactions.unshift({ type, amount, date: date.toISOString(), txHash });
+      renderTransactionHistory();
+      saveTransactionHistory();
+    }
+
+    function renderTransactionHistory() {
+      const historyEl = document.getElementById("txHistory");
+      historyEl.innerHTML = "";
+
+      if (transactions.length === 0) {
+        historyEl.innerHTML = '<div style="text-align:center; opacity:0.65; padding:1.5rem;">No transactions yet</div>';
+        return;
+      }
+
+      transactions.slice(0, 8).forEach(tx => {
+        const item = document.createElement("div");
+        item.className = "tx-item";
+        const shortHash = tx.txHash ? `${tx.txHash.substring(0,6)}...${tx.txHash.substring(62)}` : "N/A";
+        const txDate = new Date(tx.date);
+
+        item.innerHTML = `
+          <div class="tx-left">
+            <div class="tx-type">${tx.type}</div>
+            <div class="tx-hash">
+              <span>TX:</span>
+              <a href="${EXPLORER}/tx/${tx.txHash}" target="_blank" rel="noreferrer">${shortHash}</a>
+            </div>
+            <div class="tx-date">${txDate.toLocaleString()}</div>
+          </div>
+          <div class="tx-right">
+            <div class="tx-amount">${tx.amount} ${NATIVE_SYMBOL}</div>
+          </div>
+        `;
+        historyEl.appendChild(item);
+      });
+    }
+
+    function saveTransactionHistory() {
+      if (userAddress && transactions.length > 0) {
+        localStorage.setItem(`arc_vault_${CONTRACT}_tx_${userAddress}`, JSON.stringify(transactions));
+      }
+    }
+
+    function loadTransactionHistory() {
+      const saved = localStorage.getItem(`arc_vault_${CONTRACT}_tx_${userAddress}`);
+      if (!saved) return;
+
+      try {
+        transactions = JSON.parse(saved);
+        renderTransactionHistory();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ==================== STREAK / ACHIEVEMENTS ====================
+    function loadStreak() {
+      const savedStreak = localStorage.getItem(`arc_vault_${CONTRACT}_streak`);
+      if (savedStreak) {
+        streakDays = parseInt(savedStreak) || 0;
+        document.getElementById("streakDays").innerText = streakDays;
+        
+        if (streakDays >= 7) unlockAchievement("ach3");
+      }
+    }
+
+    function updateStreak() {
+      const lastDeposit = localStorage.getItem(`arc_vault_${CONTRACT}_last_deposit`);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      if (!lastDeposit) {
+        streakDays = 1;
+      } else {
+        const last = new Date(lastDeposit);
+        last.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          streakDays++;
+        } else if (diffDays === 0) {
+          const currentStreak = localStorage.getItem(`arc_vault_${CONTRACT}_streak`);
+          streakDays = parseInt(currentStreak) || 1;
+        } else {
+          streakDays = 1;
+        }
+      }
+
+      localStorage.setItem(`arc_vault_${CONTRACT}_last_deposit`, now.toISOString());
+      localStorage.setItem(`arc_vault_${CONTRACT}_streak`, streakDays.toString());
+      document.getElementById("streakDays").innerText = streakDays;
+
+      if (streakDays >= 7) unlockAchievement("ach3");
+    }
+
+    function unlockAchievement(id) {
+      const ach = document.getElementById(id);
+      if (!ach.classList.contains("unlocked")) {
+        ach.classList.add("unlocked");
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+    }
+
+    // ==================== MISC ====================
+    function shareOnTwitter() {
+      const balance = document.getElementById("balance").innerText;
+      const text = `I'm saving ${balance} on @BrodaRev's 26Arc Vault! 🔒💰 Disciplined savings on @buildonarc\n\nJoin me: ${window.location.href}`;
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById("status");
+      el.innerHTML = msg;
+      el.className = "status-" + type;
+      if (type === "success" || type === "error") {
+        setTimeout(() => { el.style.display = "none"; }, 8000);
+      }
+    }
+
+    function toggleFaq(item) {
+      item.classList.toggle("active");
+      const icon = item.querySelector(".faq-question span");
+      icon.innerText = item.classList.contains("active") ? "-" : "+";
+    }
+
+    function closeSuccessModal() {
+      document.getElementById("successModal").style.display = "none";
+    }
+
+    function showSuccessModal(txHash, type, amount) {
+      const modal = document.getElementById("successModal");
+      const text = document.getElementById("successText");
+      const link = document.getElementById("explorerLink");
+
+      if (type === "Deposit") text.innerText = `Successfully deposited ${amount} ${NATIVE_SYMBOL}!`;
+      else if (type === "Withdraw") text.innerText = `Successfully withdrawn ${amount} ${NATIVE_SYMBOL}!`;
+      else text.innerText = `Emergency exit completed!`;
+
+      link.href = `${EXPLORER}/tx/${txHash}`;
+      modal.style.display = "block";
+
+      setTimeout(() => { modal.style.display = "none"; }, 10000);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener("load", async () => {
+      document.getElementById("expectedChainId").innerText = String(CHAIN_ID);
+      setConnectButtonState("connect");
+      await initializeStats();
+
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts && accounts.length > 0) {
+            hasTriedConnect = true;
+            const chainId = await getCurrentChainId(window.ethereum);
+            if (chainId !== CHAIN_ID) {
+              showNetworkWarning(chainId);
+            }
+          }
+        } catch (e) {
+          console.error("Error checking connected wallet:", e);
+        }
+      }
+    });
+
+    setInterval(() => { updateStats(); }, 30000);
+
+    window.addEventListener("beforeunload", () => {
+      saveTransactionHistory();
+    });
+  </script>
+</body>
+</html>
