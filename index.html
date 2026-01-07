@@ -773,7 +773,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-icon">🔒</div>
-          <div class="stat-value" id="totalDeposits">0</div>
+          <div class="stat-value" id="totalDeposits">0.00 USDC</div>
           <div class="stat-label">Total Deposits</div>
         </div>
         <div class="stat-card">
@@ -1048,49 +1048,91 @@
     const CONTRACT = "0xdd6E64d5E6F304587bbc6c6B1042dbeC25adbB35";
     
     const CHAIN_ID = 5042002;
-    const CHAIN_ID_HEX = "0x4cef52";
+    const CHAIN_ID_HEX = "0x4cef52"; // ✅ hex(5042002)
     const EXPLORER = "https://testnet.arcscan.app";
     const RPC_URL = "https://rpc.testnet.arc.network";
     const NATIVE_SYMBOL = "USDC";
 
-    // ==================== CONTRACT ABI ====================
+    // ==================== CONTRACT ABI (UPDATED) ====================
     const ABI = [
-      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
-      {"inputs":[],"name":"FundsStillLocked","type":"error"},
-      {"inputs":[],"name":"InsufficientBalance","type":"error"},
-      {"inputs":[],"name":"InvalidAmount","type":"error"},
-      {"inputs":[],"name":"InvalidLockPeriod","type":"error"},
-      {"inputs":[],"name":"NoBalance","type":"error"},
-      {"inputs":[],"name":"NoFeesToCollect","type":"error"},
-      {"inputs":[],"name":"OnlyOwner","type":"error"},
-      {"inputs":[],"name":"TransferFailed","type":"error"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"unlockDate","type":"uint256"}],"name":"Deposit","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"EmergencyExit","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesCollected","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"newUnlockDate","type":"uint256"}],"name":"UnlockDateExtended","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawal","type":"event"},
-      {"inputs":[],"name":"EMERGENCY_FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"collectFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"name":"depositWithCustomLock","outputs":[],"stateMutability":"payable","type":"function"},
-      {"inputs":[],"name":"emergencyExit","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_additionalDays","type":"uint256"}],"name":"extendGlobalUnlockDate","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"getStats","outputs":[{"internalType":"uint256","name":"tvl","type":"uint256"},{"internalType":"uint256","name":"depositors","type":"uint256"},{"internalType":"uint256","name":"fees","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTimeUntilUnlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"getTotalValueLocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserUnlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasDeposited","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"isLocked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalDepositors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"unlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userUnlockDates","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"withdrawAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"stateMutability":"payable","type":"receive"}
+      { "inputs": [], "name": "collectFees", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      { "inputs": [{ "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }], "name": "depositWithCustomLock", "outputs": [], "stateMutability": "payable", "type": "function" },
+      { "inputs": [], "name": "emergencyExit", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      { "inputs": [{ "internalType": "uint256", "name": "_additionalDays", "type": "uint256" }], "name": "extendGlobalUnlockDate", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      { "inputs": [{ "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }], "stateMutability": "nonpayable", "type": "constructor" },
+      { "inputs": [], "name": "FundsStillLocked", "type": "error" },
+      { "inputs": [], "name": "InsufficientBalance", "type": "error" },
+      { "inputs": [], "name": "InvalidAmount", "type": "error" },
+      { "inputs": [], "name": "InvalidLockPeriod", "type": "error" },
+      { "inputs": [], "name": "NoBalance", "type": "error" },
+      { "inputs": [], "name": "NoFeesToCollect", "type": "error" },
+      { "inputs": [], "name": "OnlyOwner", "type": "error" },
+      { "inputs": [], "name": "TransferFailed", "type": "error" },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "unlockDate", "type": "uint256" }
+        ],
+        "name": "Deposit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "fee", "type": "uint256" }
+        ],
+        "name": "EmergencyExit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "FeesCollected",
+        "type": "event"
+      },
+      { "inputs": [{ "internalType": "address", "name": "_newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "newUnlockDate", "type": "uint256" }
+        ],
+        "name": "UnlockDateExtended",
+        "type": "event"
+      },
+      { "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }], "name": "withdraw", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "Withdrawal",
+        "type": "event"
+      },
+      { "inputs": [], "name": "withdrawAll", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+      { "stateMutability": "payable", "type": "receive" },
+      { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "balances", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "EMERGENCY_FEE_PERCENT", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }], "name": "getBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "getStats", "outputs": [{ "internalType": "uint256", "name": "tvl", "type": "uint256" }, { "internalType": "uint256", "name": "depositors", "type": "uint256" }, { "internalType": "uint256", "name": "fees", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }], "name": "getTimeUntilUnlock", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "getTotalValueLocked", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }], "name": "getUserUnlockDate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "hasDeposited", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }], "name": "isLocked", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "totalDepositors", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "totalFees", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [], "name": "unlockDate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+      { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "userUnlockDates", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
     ];
 
     // ==================== STATE VARIABLES ====================
@@ -1102,6 +1144,10 @@
     let selectedAPY = 5;
     let countdownInterval = null;
     let hasTriedConnect = false;
+
+    // ✅ Read-only provider/contract (works even without wallet)
+    const readProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+    const readContract = new ethers.Contract(CONTRACT, ABI, readProvider);
 
     // ==================== UI HELPERS ====================
     function setConnectButtonState(state) {
@@ -1137,8 +1183,11 @@
       }
     }
 
+    // ✅ FIX: Only show wrong-network banner after a user actually tried to connect
+    // (or already has a connected wallet session)
     function showNetworkWarning(detectedChainId) {
-      if (!hasTriedConnect && !userAddress) return;
+      const hasSession = !!userAddress || !!hasTriedConnect;
+      if (!hasSession) return;
 
       const el = document.getElementById("networkWarning");
       const detected = document.getElementById("detectedChainText");
@@ -1230,6 +1279,7 @@
       }
     }
 
+    // ✅ FIX: Normalize chainId (handles hex and number)
     async function getCurrentChainId(p) {
       try {
         const chainIdHex = await p.request({ method: "eth_chainId" });
@@ -1378,11 +1428,10 @@
       if (e.target === document.getElementById("walletModal")) closeWalletModal();
     };
 
-    // ==================== STATS ====================
+    // ==================== STATS (READ-ONLY) ====================
     async function initializeStats() {
       try {
-        const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        statsContract = new ethers.Contract(CONTRACT, ABI, statsProvider);
+        statsContract = readContract;
         await updateStats();
       } catch (e) {
         console.error(e);
@@ -1391,15 +1440,13 @@
 
     async function updateStats() {
       try {
-        const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        const statsContractRead = new ethers.Contract(CONTRACT, ABI, statsProvider);
-        
-        const stats = await statsContractRead.getStats();
+        const stats = await readContract.getStats();
         const tvl = parseFloat(ethers.utils.formatEther(stats.tvl));
-        
+
         document.getElementById("tvl").innerText = tvl.toFixed(2) + ` ${NATIVE_SYMBOL}`;
         document.getElementById("userCount").innerText = stats.depositors.toString();
-        document.getElementById("totalDeposits").innerText = stats.depositors.toString();
+        // ✅ FIX: Total Deposits should be an amount, not depositors count
+        document.getElementById("totalDeposits").innerText = tvl.toFixed(2) + ` ${NATIVE_SYMBOL}`;
       } catch (e) {
         console.error(e);
       }
@@ -1475,13 +1522,19 @@
           provider = new ethers.providers.Web3Provider(chosen);
 
           const chainId = await getCurrentChainId(chosen);
+
+          // ✅ FIX: Don’t scream “Wrong network” unless user has a connected session / tried connect
           if (chainId !== CHAIN_ID) {
             showNetworkWarning(chainId);
-            setStatus("⚠️ Wrong network. Please switch to Arc Testnet.", "error");
+            if (userAddress || hasTriedConnect) {
+              setStatus("⚠️ Wrong network. Please switch to Arc Testnet.", "error");
+            }
             return;
           } else {
             hideNetworkWarning();
-            setStatus("✅ Connected to Arc Testnet", "success");
+            if (userAddress || hasTriedConnect) {
+              setStatus("✅ Connected to Arc Testnet", "success");
+            }
           }
 
           if (userAddress) {
@@ -1527,6 +1580,7 @@
         if (balanceValue >= 100) unlockAchievement("ach2");
       } catch (e) {
         console.error(e);
+        // ✅ FIX: don’t crash UI—show readable fallback
         document.getElementById("balance").innerText = "Error loading";
       }
     }
@@ -1899,6 +1953,7 @@
       setConnectButtonState("connect");
       await initializeStats();
 
+      // ✅ FIX: don’t show wrong-network unless the site already has accounts connected
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
