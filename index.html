@@ -749,15 +749,6 @@
             Disconnect 🚪
           </button>
         </div>
-
-        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; justify-content:flex-end;">
-          <a href="https://x.com/BrodaRev" target="_blank" class="social-link" rel="noreferrer">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-            @BrodaRev
-          </a>
-        </div>
       </div>
 
       <div class="stats-grid">
@@ -1039,286 +1030,41 @@
         <span>Secured by Arc Network</span>
       </div>
 
+      <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; padding: 1.5rem 0 0.5rem 0; flex-wrap: wrap; opacity: 0.85;">
+        <a href="https://x.com/26ArcVault" target="_blank" class="social-link" rel="noreferrer" style="margin: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          @26ArcVault
+        </a>
+        
+        <span style="opacity: 0.5;">•</span>
+        
+        <a href="https://x.com/BrodaRev" target="_blank" class="social-link" rel="noreferrer" style="margin: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          Built by @BrodaRev
+        </a>
+      </div>
+
+      <div style="text-align: center; padding: 1rem 0; opacity: 0.6; font-size: 0.85rem;">
+        © 2025 26Arc Vault. Non-custodial savings on Arc Network.
+      </div>
+
     </div>
   </div>
 
   <script>
-    // ==================== CONFIGURATION ====================
     const CONTRACT = "0xE5f41fA47cB6253750909feA73a3e4D049df921c";
-
     const CHAIN_ID = 5042002;
     const CHAIN_ID_HEX = "0x4cef52";
     const EXPLORER = "https://testnet.arcscan.app";
     const RPC_URL = "https://rpc.testnet.arc.network";
     const NATIVE_SYMBOL = "USDC";
 
-    // ==================== CONTRACT ABI (NEW) ====================
-    const ABI = [
-      {
-        "inputs": [],
-        "name": "collectFees",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }
-        ],
-        "name": "depositWithCustomLock",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "emergencyExit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "_additionalDays", "type": "uint256" }
-        ],
-        "name": "extendGlobalUnlockDate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      { "inputs": [], "name": "FundsStillLocked", "type": "error" },
-      { "inputs": [], "name": "InsufficientBalance", "type": "error" },
-      { "inputs": [], "name": "InvalidAmount", "type": "error" },
-      { "inputs": [], "name": "InvalidLockPeriod", "type": "error" },
-      { "inputs": [], "name": "NoBalance", "type": "error" },
-      { "inputs": [], "name": "NoFeesToCollect", "type": "error" },
-      { "inputs": [], "name": "OnlyOwner", "type": "error" },
-      { "inputs": [], "name": "TransferFailed", "type": "error" },
-      {
-        "anonymous": false,
-        "inputs": [
-          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
-          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "indexed": false, "internalType": "uint256", "name": "unlockDate", "type": "uint256" }
-        ],
-        "name": "Deposit",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
-          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "indexed": false, "internalType": "uint256", "name": "fee", "type": "uint256" }
-        ],
-        "name": "EmergencyExit",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "FeesCollected",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "_newOwner", "type": "address" }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
-          { "indexed": false, "internalType": "uint256", "name": "newUnlockDate", "type": "uint256" }
-        ],
-        "name": "UnlockDateExtended",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "_amount", "type": "uint256" }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
-          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "Withdrawal",
-        "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "withdrawAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      { "stateMutability": "payable", "type": "receive" },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "name": "balances",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "EMERGENCY_FEE_PERCENT",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "_user", "type": "address" }
-        ],
-        "name": "getBalance",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getStats",
-        "outputs": [
-          { "internalType": "uint256", "name": "tvl", "type": "uint256" },
-          { "internalType": "uint256", "name": "depositors", "type": "uint256" },
-          { "internalType": "uint256", "name": "fees", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "_user", "type": "address" }
-        ],
-        "name": "getTimeUntilUnlock",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getTotalValueLocked",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "_user", "type": "address" }
-        ],
-        "name": "getUserUnlockDate",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "name": "hasDeposited",
-        "outputs": [
-          { "internalType": "bool", "name": "", "type": "bool" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "_user", "type": "address" }
-        ],
-        "name": "isLocked",
-        "outputs": [
-          { "internalType": "bool", "name": "", "type": "bool" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-          { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "totalDepositors",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "totalFees",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "unlockDate",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "name": "userUnlockDates",
-        "outputs": [
-          { "internalType": "uint256", "name": "", "type": "uint256" }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ];
+    const ABI = [{"inputs":[],"name":"collectFees","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"name":"depositWithCustomLock","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"emergencyExit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalDays","type":"uint256"}],"name":"extendGlobalUnlockDate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"FundsStillLocked","type":"error"},{"inputs":[],"name":"InsufficientBalance","type":"error"},{"inputs":[],"name":"InvalidAmount","type":"error"},{"inputs":[],"name":"InvalidLockPeriod","type":"error"},{"inputs":[],"name":"NoBalance","type":"error"},{"inputs":[],"name":"NoFeesToCollect","type":"error"},{"inputs":[],"name":"OnlyOwner","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"unlockDate","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"EmergencyExit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesCollected","type":"event"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"newUnlockDate","type":"uint256"}],"name":"UnlockDateExtended","type":"event"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawal","type":"event"},{"inputs":[],"name":"withdrawAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"EMERGENCY_FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getStats","outputs":[{"internalType":"uint256","name":"tvl","type":"uint256"},{"internalType":"uint256","name":"depositors","type":"uint256"},{"internalType":"uint256","name":"fees","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTimeUntilUnlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalValueLocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserUnlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasDeposited","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"isLocked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDepositors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userUnlockDates","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
-    // ==================== STATE VARIABLES ====================
     let provider, signer, contract, userAddress, statsContract;
     let unlockTimestamp = 0;
     let transactions = [];
@@ -1328,32 +1074,27 @@
     let countdownInterval = null;
     let hasTriedConnect = false;
 
-    // ==================== UI HELPERS ====================
     function setConnectButtonState(state) {
       const btn = document.getElementById("connectBtn");
       if (!btn) return;
-
       if (state === "loading") {
         btn.disabled = true;
         btn.innerHTML = `Connecting <span class="loader"></span>`;
         btn.onclick = () => {};
         return;
       }
-
       if (state === "connect") {
         btn.disabled = false;
         btn.innerText = "Connect Wallet";
         btn.onclick = () => openWalletModal();
         return;
       }
-
       if (state === "switch") {
         btn.disabled = false;
         btn.innerText = "Switch to Arc Testnet";
         btn.onclick = () => switchToArcTestnet();
         return;
       }
-
       if (state === "connected") {
         btn.disabled = true;
         btn.innerText = "Connected ✅";
@@ -1364,7 +1105,6 @@
 
     function showNetworkWarning(detectedChainId) {
       if (!hasTriedConnect && !userAddress) return;
-
       const el = document.getElementById("networkWarning");
       const detected = document.getElementById("detectedChainText");
       if (detectedChainId != null) {
@@ -1373,7 +1113,6 @@
         detected.innerText = "";
       }
       el.style.display = "block";
-
       disableActions(true);
       setConnectButtonState("switch");
     }
@@ -1393,7 +1132,6 @@
       if (e) e.disabled = disable;
     }
 
-    // ==================== MULTI-WALLET PROVIDER SELECTION ====================
     function getInjectedProviders() {
       const eth = window.ethereum;
       if (!eth) return [];
@@ -1404,25 +1142,20 @@
     function pickProviderByName(name) {
       const providers = getInjectedProviders();
       const lower = (name || "").toLowerCase();
-
       const isMM = p => !!p.isMetaMask;
       const isCB = p => !!p.isCoinbaseWallet;
       const isTrust = p => !!p.isTrust;
-
       if (lower.includes("metamask")) return providers.find(isMM) || providers[0];
       if (lower.includes("coinbase")) return providers.find(isCB) || providers[0];
       if (lower.includes("trust")) return providers.find(isTrust) || providers[0];
-
       return providers[0];
     }
 
-    // ==================== NETWORK SWITCHING ====================
     async function switchToArcTestnet() {
       if (!window.ethereum) {
         alert("No wallet detected. Install a browser wallet.");
         return false;
       }
-
       try {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
@@ -1476,7 +1209,6 @@
       return true;
     }
 
-    // ==================== PARTICLES ANIMATION ====================
     function createParticles() {
       for (let i = 0; i < 30; i++) {
         const particle = document.createElement("div");
@@ -1490,16 +1222,13 @@
     }
     createParticles();
 
-    // ==================== SAVINGS PLAN SELECTION ====================
     function selectPeriod(days, element) {
       selectedLockDays = days;
-
       if (days < 30) selectedAPY = 5;
       else if (days < 90) selectedAPY = 10;
       else if (days < 180) selectedAPY = 20;
       else if (days < 365) selectedAPY = 35;
       else selectedAPY = 50;
-
       document.querySelectorAll(".period-btn").forEach(btn => btn.classList.remove("active"));
       element.classList.add("active");
       document.getElementById("selectedPeriodText").innerText = `Selected: ${days} days (${selectedAPY}% APY)`;
@@ -1521,14 +1250,12 @@
         document.getElementById("customDays").value = 7;
         return;
       }
-
       selectedLockDays = days;
       if (days < 30) selectedAPY = 5;
       else if (days < 90) selectedAPY = 10;
       else if (days < 180) selectedAPY = 20;
       else if (days < 365) selectedAPY = 35;
       else selectedAPY = 50;
-
       document.getElementById("selectedPeriodText").innerText = `Selected: ${days} days (${selectedAPY}% APY)`;
       calculateInterest();
     }
@@ -1539,10 +1266,8 @@
         document.getElementById("interestBreakdown").style.display = "none";
         return;
       }
-
       const interest = (amount * selectedAPY / 100 * selectedLockDays / 365);
       const total = amount + interest;
-
       document.getElementById("principalAmount").innerText = amount.toFixed(2) + ` ${NATIVE_SYMBOL}`;
       document.getElementById("interestEarned").innerText = "+" + interest.toFixed(2) + ` ${NATIVE_SYMBOL}`;
       document.getElementById("totalAmount").innerText = total.toFixed(2) + ` ${NATIVE_SYMBOL}`;
@@ -1554,7 +1279,6 @@
       calculateInterest();
     }
 
-    // ==================== WALLET MODAL ====================
     const wallets = [
       { name: "MetaMask", icon: "🦊", check: (p) => !!p.isMetaMask },
       { name: "Coinbase", icon: "💼", check: (p) => !!p.isCoinbaseWallet },
@@ -1566,24 +1290,20 @@
       const modal = document.getElementById("walletModal");
       const opts = document.getElementById("walletOptions");
       opts.innerHTML = "";
-
       const providers = getInjectedProviders();
       if (!providers.length) {
         opts.innerHTML = '<div style="text-align:center;padding:1.6rem;opacity:0.85;">No wallet detected</div>';
         modal.style.display = "block";
         return;
       }
-
       const availableWallets = [];
       for (const w of wallets) {
         const match = providers.find(p => w.check(p));
         if (match) availableWallets.push(w);
       }
-
       if (!availableWallets.find(w => w.name === "Browser Wallet")) {
         availableWallets.push(wallets[3]);
       }
-
       availableWallets.forEach(w => {
         const div = document.createElement("div");
         div.className = "wallet-option";
@@ -1591,7 +1311,6 @@
         div.onclick = () => connectWallet(w.name);
         opts.appendChild(div);
       });
-
       modal.style.display = "block";
     }
 
@@ -1603,7 +1322,6 @@
       if (e.target === document.getElementById("walletModal")) closeWalletModal();
     };
 
-    // ==================== STATS ====================
     async function initializeStats() {
       try {
         const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
@@ -1618,10 +1336,8 @@
       try {
         const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
         const statsContractRead = new ethers.Contract(CONTRACT, ABI, statsProvider);
-
         const stats = await statsContractRead.getStats();
         const tvl = parseFloat(ethers.utils.formatEther(stats.tvl));
-
         document.getElementById("tvl").innerText = tvl.toFixed(2) + ` ${NATIVE_SYMBOL}`;
         document.getElementById("userCount").innerText = stats.depositors.toString();
         document.getElementById("totalDeposits").innerText = stats.depositors.toString();
@@ -1630,22 +1346,17 @@
       }
     }
 
-    // ==================== WALLET CONNECTION ====================
     async function connectWallet(walletName) {
       try {
         hasTriedConnect = true;
         setConnectButtonState("loading");
         closeWalletModal();
-
         if (!window.ethereum) {
           setConnectButtonState("connect");
           return alert("No wallet detected.");
         }
-
         const chosen = pickProviderByName(walletName);
-
         await chosen.request({ method: "eth_requestAccounts" });
-
         const ok = await ensureCorrectNetwork(chosen);
         if (!ok) {
           const switched = await switchToArcTestnet();
@@ -1659,25 +1370,20 @@
             return;
           }
         }
-
         provider = new ethers.providers.Web3Provider(chosen);
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
         contract = new ethers.Contract(CONTRACT, ABI, signer);
-
         setConnectButtonState("connected");
         document.getElementById("disconnectBtn").style.display = "inline-flex";
-
         const addr = document.getElementById("walletAddress");
         addr.innerText = `${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
         addr.style.display = "block";
-
         await updateBalance();
         await updateUnlockDate();
         startCountdown();
         loadTransactionHistory();
         loadStreak();
-
         setStatus("✅ Connected!", "success");
         unlockAchievement("ach1");
       } catch (e) {
@@ -1691,14 +1397,12 @@
       if (confirm("Disconnect wallet?")) location.reload();
     }
 
-    // ==================== CHAIN/ACCOUNT CHANGE HANDLING ====================
     if (window.ethereum) {
       window.ethereum.on("chainChanged", async () => {
         try {
           const providers = getInjectedProviders();
           const chosen = providers[0];
           provider = new ethers.providers.Web3Provider(chosen);
-
           const chainId = await getCurrentChainId(chosen);
           if (chainId !== CHAIN_ID) {
             showNetworkWarning(chainId);
@@ -1708,7 +1412,6 @@
             hideNetworkWarning();
             setStatus("✅ Connected to Arc Testnet", "success");
           }
-
           if (userAddress) {
             signer = provider.getSigner();
             contract = new ethers.Contract(CONTRACT, ABI, signer);
@@ -1720,35 +1423,28 @@
           console.error(e);
         }
       });
-
       window.ethereum.on("accountsChanged", () => location.reload());
     }
 
-    // ==================== VAULT LOGIC ====================
     async function updateBalance() {
       try {
         if (!contract || !userAddress) return;
-
         const chosen = getInjectedProviders()[0];
         const chainId = await getCurrentChainId(chosen);
         if (chainId !== CHAIN_ID) {
           showNetworkWarning(chainId);
           return;
         }
-
         const bal = await contract.getBalance(userAddress);
         const balanceValue = parseFloat(ethers.utils.formatEther(bal));
-
         const depositInfo = localStorage.getItem(`arc_vault_${CONTRACT}_deposit_${userAddress}`);
         if (depositInfo) {
           const info = JSON.parse(depositInfo);
           const interest = parseFloat(info.interest || "0");
-          document.getElementById("balance").innerText =
-            `${balanceValue.toFixed(2)} ${NATIVE_SYMBOL} (+${interest.toFixed(2)} est.)`;
+          document.getElementById("balance").innerText = `${balanceValue.toFixed(2)} ${NATIVE_SYMBOL} (+${interest.toFixed(2)} est.)`;
         } else {
           document.getElementById("balance").innerText = balanceValue.toFixed(2) + ` ${NATIVE_SYMBOL}`;
         }
-
         if (balanceValue >= 100) unlockAchievement("ach2");
       } catch (e) {
         console.error(e);
@@ -1759,14 +1455,12 @@
     async function updateUnlockDate() {
       try {
         if (!contract || !userAddress) return;
-
         const chosen = getInjectedProviders()[0];
         const chainId = await getCurrentChainId(chosen);
         if (chainId !== CHAIN_ID) {
           showNetworkWarning(chainId);
           return;
         }
-
         const ts = await contract.getUserUnlockDate(userAddress);
         unlockTimestamp = ts.toNumber();
       } catch (e) {
@@ -1776,13 +1470,10 @@
 
     function startCountdown() {
       if (countdownInterval) clearInterval(countdownInterval);
-
       countdownInterval = setInterval(() => {
         if (unlockTimestamp === 0) return;
-
         const now = Math.floor(Date.now() / 1000);
         const diff = unlockTimestamp - now;
-
         if (diff <= 0) {
           document.getElementById("days").innerText = "00";
           document.getElementById("hours").innerText = "00";
@@ -1792,12 +1483,10 @@
           document.getElementById("lockStatus").style.color = "rgba(56,239,125,0.95)";
           return;
         }
-
         const d = Math.floor(diff / 86400);
         const h = Math.floor((diff % 86400) / 3600);
         const m = Math.floor((diff % 3600) / 60);
         const s = diff % 60;
-
         document.getElementById("days").innerText = String(d).padStart(2, "0");
         document.getElementById("hours").innerText = String(h).padStart(2, "0");
         document.getElementById("minutes").innerText = String(m).padStart(2, "0");
@@ -1812,38 +1501,25 @@
         if (!contract || !signer) return alert("Connect wallet!");
         const amt = document.getElementById("amount").value;
         if (!amt || parseFloat(amt) <= 0) return alert("Enter amount!");
-
         const chosen = getInjectedProviders()[0];
         const chainId = await getCurrentChainId(chosen);
         if (chainId !== CHAIN_ID) {
           showNetworkWarning(chainId);
           return alert("Switch to Arc Testnet!");
         }
-
         const interest = (parseFloat(amt) * selectedAPY / 100 * selectedLockDays / 365);
         const total = parseFloat(amt) + interest;
-
-        const confirmMsg =
-          `Lock ${amt} ${NATIVE_SYMBOL}?\n\n` +
-          `Plan (Estimate):\n• ${selectedLockDays} days @ ${selectedAPY}% APY\n• Est. interest: +${interest.toFixed(2)} ${NATIVE_SYMBOL}\n• Est. total: ${total.toFixed(2)} ${NATIVE_SYMBOL}\n\n` +
-          `Note: Planning numbers are estimates. Unlock is based on on-chain unlock date.`;
-
+        const confirmMsg = `Lock ${amt} ${NATIVE_SYMBOL}?\n\nPlan (Estimate):\n• ${selectedLockDays} days @ ${selectedAPY}% APY\n• Est. interest: +${interest.toFixed(2)} ${NATIVE_SYMBOL}\n• Est. total: ${total.toFixed(2)} ${NATIVE_SYMBOL}\n\nNote: Planning numbers are estimates. Unlock is based on on-chain unlock date.`;
         if (!confirm(confirmMsg)) return;
-
         setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
-
         const tx = await contract.depositWithCustomLock(selectedLockDays, {
           value: ethers.utils.parseEther(amt)
         });
-
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
         await tx.wait();
-
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-
         setStatus("✅ Deposited!", "success");
         showSuccessModal(tx.hash, "Deposit", amt);
-
         const depositInfo = {
           amount: amt,
           lockDays: selectedLockDays,
@@ -1852,12 +1528,9 @@
           createdAt: new Date().toISOString()
         };
         localStorage.setItem(`arc_vault_${CONTRACT}_deposit_${userAddress}`, JSON.stringify(depositInfo));
-
         addTransaction("Deposit", amt, new Date(), tx.hash);
-
         document.getElementById("amount").value = "";
         document.getElementById("interestBreakdown").style.display = "none";
-
         await updateBalance();
         await updateUnlockDate();
         await updateStats();
@@ -1865,7 +1538,6 @@
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1873,7 +1545,6 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-
         setStatus(errorMsg, "error");
       }
     }
@@ -1883,41 +1554,31 @@
         if (!contract) return alert("Connect wallet!");
         const amt = document.getElementById("withdrawAmount").value;
         if (!amt || parseFloat(amt) <= 0) return alert("Enter amount!");
-
         const chosen = getInjectedProviders()[0];
         const chainId = await getCurrentChainId(chosen);
         if (chainId !== CHAIN_ID) {
           showNetworkWarning(chainId);
           return alert("Switch to Arc Testnet!");
         }
-
         const bal = await contract.getBalance(userAddress);
         const balanceValue = parseFloat(ethers.utils.formatEther(bal));
         if (parseFloat(amt) > balanceValue) {
           return alert(`Insufficient balance. You have ${balanceValue.toFixed(2)} ${NATIVE_SYMBOL}`);
         }
-
         if (!confirm(`Withdraw ${amt} ${NATIVE_SYMBOL}?`)) return;
-
         setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
         const tx = await contract.withdraw(ethers.utils.parseEther(amt));
-
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
         await tx.wait();
-
         setStatus("✅ Withdrawn!", "success");
         showSuccessModal(tx.hash, "Withdraw", amt);
-
         addTransaction("Withdraw", amt, new Date(), tx.hash);
-
         document.getElementById("withdrawAmount").value = "";
-
         await updateBalance();
         await updateStats();
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1925,7 +1586,6 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-
         setStatus(errorMsg, "error");
       }
     }
@@ -1934,31 +1594,24 @@
       try {
         if (!contract) return alert("Connect wallet!");
         if (!confirm("⚠️ 10% fee! Continue?")) return;
-
         const chosen = getInjectedProviders()[0];
         const chainId = await getCurrentChainId(chosen);
         if (chainId !== CHAIN_ID) {
           showNetworkWarning(chainId);
           return alert("Switch to Arc Testnet!");
         }
-
         setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
         const tx = await contract.emergencyExit();
-
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
         await tx.wait();
-
         setStatus("✅ Exit done (10% fee)", "success");
         showSuccessModal(tx.hash, "Emergency Exit", "All");
-
         addTransaction("Emergency Exit", "All", new Date(), tx.hash);
-
         await updateBalance();
         await updateStats();
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1966,12 +1619,10 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-
         setStatus(errorMsg, "error");
       }
     }
 
-    // ==================== TRANSACTIONS ====================
     function addTransaction(type, amount, date, txHash) {
       transactions.unshift({ type, amount, date: date.toISOString(), txHash });
       renderTransactionHistory();
@@ -1981,18 +1632,15 @@
     function renderTransactionHistory() {
       const historyEl = document.getElementById("txHistory");
       historyEl.innerHTML = "";
-
       if (transactions.length === 0) {
         historyEl.innerHTML = '<div style="text-align:center; opacity:0.65; padding:1.5rem;">No transactions yet</div>';
         return;
       }
-
       transactions.slice(0, 8).forEach(tx => {
         const item = document.createElement("div");
         item.className = "tx-item";
         const shortHash = tx.txHash ? `${tx.txHash.substring(0,6)}...${tx.txHash.substring(62)}` : "N/A";
         const txDate = new Date(tx.date);
-
         item.innerHTML = `
           <div class="tx-left">
             <div class="tx-type">${tx.type}</div>
@@ -2019,7 +1667,6 @@
     function loadTransactionHistory() {
       const saved = localStorage.getItem(`arc_vault_${CONTRACT}_tx_${userAddress}`);
       if (!saved) return;
-
       try {
         transactions = JSON.parse(saved);
         renderTransactionHistory();
@@ -2028,13 +1675,11 @@
       }
     }
 
-    // ==================== STREAK / ACHIEVEMENTS ====================
     function loadStreak() {
       const savedStreak = localStorage.getItem(`arc_vault_${CONTRACT}_streak`);
       if (savedStreak) {
         streakDays = parseInt(savedStreak) || 0;
         document.getElementById("streakDays").innerText = streakDays;
-
         if (streakDays >= 7) unlockAchievement("ach3");
       }
     }
@@ -2043,14 +1688,12 @@
       const lastDeposit = localStorage.getItem(`arc_vault_${CONTRACT}_last_deposit`);
       const now = new Date();
       now.setHours(0, 0, 0, 0);
-
       if (!lastDeposit) {
         streakDays = 1;
       } else {
         const last = new Date(lastDeposit);
         last.setHours(0, 0, 0, 0);
         const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-
         if (diffDays === 1) {
           streakDays++;
         } else if (diffDays === 0) {
@@ -2060,11 +1703,9 @@
           streakDays = 1;
         }
       }
-
       localStorage.setItem(`arc_vault_${CONTRACT}_last_deposit`, now.toISOString());
       localStorage.setItem(`arc_vault_${CONTRACT}_streak`, streakDays.toString());
       document.getElementById("streakDays").innerText = streakDays;
-
       if (streakDays >= 7) unlockAchievement("ach3");
     }
 
@@ -2076,10 +1717,9 @@
       }
     }
 
-    // ==================== MISC ====================
     function shareOnTwitter() {
       const balance = document.getElementById("balance").innerText;
-      const text = `I'm saving ${balance} on @BrodaRev's 26Arc Vault! 🔒💰 Disciplined savings on @buildonarc\n\nJoin me: ${window.location.href}`;
+      const text = `I'm saving ${balance} on 26Arc Vault! 🔒💰 Disciplined savings on @buildonarc\n\nJoin me: ${window.location.href}`;
       const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
       window.open(url, "_blank");
     }
@@ -2107,23 +1747,18 @@
       const modal = document.getElementById("successModal");
       const text = document.getElementById("successText");
       const link = document.getElementById("explorerLink");
-
       if (type === "Deposit") text.innerText = `Successfully deposited ${amount} ${NATIVE_SYMBOL}!`;
       else if (type === "Withdraw") text.innerText = `Successfully withdrawn ${amount} ${NATIVE_SYMBOL}!`;
       else text.innerText = `Emergency exit completed!`;
-
       link.href = `${EXPLORER}/tx/${txHash}`;
       modal.style.display = "block";
-
       setTimeout(() => { modal.style.display = "none"; }, 10000);
     }
 
-    // ==================== INITIALIZATION ====================
     window.addEventListener("load", async () => {
       document.getElementById("expectedChainId").innerText = String(CHAIN_ID);
       setConnectButtonState("connect");
       await initializeStats();
-
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
