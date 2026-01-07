@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Lock your USDC with time-based security on Arc Network. Disciplined savings with emergency exit option." />
   <meta name="keywords" content="Arc Network, DeFi, Savings, Time-lock, USDC, Crypto Vault" />
-  
+
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
@@ -676,21 +676,21 @@
     }
 
     @media (max-width: 480px) {
-      .countdown-timer { 
+      .countdown-timer {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 0.5rem;
       }
-      
+
       .countdown-item {
         padding: 0.6rem 0.4rem;
       }
-      
-      .countdown-number { 
-        font-size: 1.2rem; 
+
+      .countdown-number {
+        font-size: 1.2rem;
       }
-      
-      .countdown-label { 
-        font-size: 0.65rem; 
+
+      .countdown-label {
+        font-size: 0.65rem;
       }
 
       .header-left {
@@ -1044,53 +1044,278 @@
 
   <script>
     // ==================== CONFIGURATION ====================
-    // 🔥 IMPORTANT: Replace with your deployed contract address
     const CONTRACT = "0xdd6E64d5E6F304587bbc6c6B1042dbeC25adbB35";
-    
+
     const CHAIN_ID = 5042002;
     const CHAIN_ID_HEX = "0x4cef52";
     const EXPLORER = "https://testnet.arcscan.app";
     const RPC_URL = "https://rpc.testnet.arc.network";
     const NATIVE_SYMBOL = "USDC";
 
-    // ==================== CONTRACT ABI ====================
+    // ==================== CONTRACT ABI (NEW) ====================
     const ABI = [
-      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
-      {"inputs":[],"name":"FundsStillLocked","type":"error"},
-      {"inputs":[],"name":"InsufficientBalance","type":"error"},
-      {"inputs":[],"name":"InvalidAmount","type":"error"},
-      {"inputs":[],"name":"InvalidLockPeriod","type":"error"},
-      {"inputs":[],"name":"NoBalance","type":"error"},
-      {"inputs":[],"name":"NoFeesToCollect","type":"error"},
-      {"inputs":[],"name":"OnlyOwner","type":"error"},
-      {"inputs":[],"name":"TransferFailed","type":"error"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"unlockDate","type":"uint256"}],"name":"Deposit","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"EmergencyExit","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesCollected","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"newUnlockDate","type":"uint256"}],"name":"UnlockDateExtended","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawal","type":"event"},
-      {"inputs":[],"name":"EMERGENCY_FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"collectFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_daysToLock","type":"uint256"}],"name":"depositWithCustomLock","outputs":[],"stateMutability":"payable","type":"function"},
-      {"inputs":[],"name":"emergencyExit","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_additionalDays","type":"uint256"}],"name":"extendGlobalUnlockDate","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"getStats","outputs":[{"internalType":"uint256","name":"tvl","type":"uint256"},{"internalType":"uint256","name":"depositors","type":"uint256"},{"internalType":"uint256","name":"fees","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTimeUntilUnlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"getTotalValueLocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserUnlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasDeposited","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"isLocked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalDepositors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"unlockDate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userUnlockDates","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"withdrawAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"stateMutability":"payable","type":"receive"}
+      {
+        "inputs": [],
+        "name": "collectFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }
+        ],
+        "name": "depositWithCustomLock",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "emergencyExit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_additionalDays", "type": "uint256" }
+        ],
+        "name": "extendGlobalUnlockDate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_daysToLock", "type": "uint256" }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      { "inputs": [], "name": "FundsStillLocked", "type": "error" },
+      { "inputs": [], "name": "InsufficientBalance", "type": "error" },
+      { "inputs": [], "name": "InvalidAmount", "type": "error" },
+      { "inputs": [], "name": "InvalidLockPeriod", "type": "error" },
+      { "inputs": [], "name": "NoBalance", "type": "error" },
+      { "inputs": [], "name": "NoFeesToCollect", "type": "error" },
+      { "inputs": [], "name": "OnlyOwner", "type": "error" },
+      { "inputs": [], "name": "TransferFailed", "type": "error" },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "unlockDate", "type": "uint256" }
+        ],
+        "name": "Deposit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "indexed": false, "internalType": "uint256", "name": "fee", "type": "uint256" }
+        ],
+        "name": "EmergencyExit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "FeesCollected",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_newOwner", "type": "address" }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "newUnlockDate", "type": "uint256" }
+        ],
+        "name": "UnlockDateExtended",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "Withdrawal",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "withdrawAll",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      { "stateMutability": "payable", "type": "receive" },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "", "type": "address" }
+        ],
+        "name": "balances",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "EMERGENCY_FEE_PERCENT",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_user", "type": "address" }
+        ],
+        "name": "getBalance",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getStats",
+        "outputs": [
+          { "internalType": "uint256", "name": "tvl", "type": "uint256" },
+          { "internalType": "uint256", "name": "depositors", "type": "uint256" },
+          { "internalType": "uint256", "name": "fees", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_user", "type": "address" }
+        ],
+        "name": "getTimeUntilUnlock",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getTotalValueLocked",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_user", "type": "address" }
+        ],
+        "name": "getUserUnlockDate",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "", "type": "address" }
+        ],
+        "name": "hasDeposited",
+        "outputs": [
+          { "internalType": "bool", "name": "", "type": "bool" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_user", "type": "address" }
+        ],
+        "name": "isLocked",
+        "outputs": [
+          { "internalType": "bool", "name": "", "type": "bool" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          { "internalType": "address", "name": "", "type": "address" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalDepositors",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalFees",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "unlockDate",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "", "type": "address" }
+        ],
+        "name": "userUnlockDates",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
     ];
 
     // ==================== STATE VARIABLES ====================
@@ -1393,10 +1618,10 @@
       try {
         const statsProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
         const statsContractRead = new ethers.Contract(CONTRACT, ABI, statsProvider);
-        
+
         const stats = await statsContractRead.getStats();
         const tvl = parseFloat(ethers.utils.formatEther(stats.tvl));
-        
+
         document.getElementById("tvl").innerText = tvl.toFixed(2) + ` ${NATIVE_SYMBOL}`;
         document.getElementById("userCount").innerText = stats.depositors.toString();
         document.getElementById("totalDeposits").innerText = stats.depositors.toString();
@@ -1612,7 +1837,7 @@
         });
 
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
-        const receipt = await tx.wait();
+        await tx.wait();
 
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
@@ -1640,7 +1865,7 @@
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-        
+
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1648,7 +1873,7 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-        
+
         setStatus(errorMsg, "error");
       }
     }
@@ -1676,7 +1901,7 @@
 
         setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
         const tx = await contract.withdraw(ethers.utils.parseEther(amt));
-        
+
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
         await tx.wait();
 
@@ -1692,7 +1917,7 @@
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-        
+
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1700,7 +1925,7 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-        
+
         setStatus(errorMsg, "error");
       }
     }
@@ -1719,7 +1944,7 @@
 
         setStatus("⏳ Confirming..." + '<div class="loader"></div>', "pending");
         const tx = await contract.emergencyExit();
-        
+
         setStatus("⏳ Waiting for confirmation..." + '<div class="loader"></div>', "pending");
         await tx.wait();
 
@@ -1733,7 +1958,7 @@
       } catch (e) {
         console.error(e);
         let errorMsg = "❌ Transaction failed: ";
-        
+
         if (e.code === 4001) {
           errorMsg += "User rejected transaction";
         } else if (e.code === -32603) {
@@ -1741,7 +1966,7 @@
         } else {
           errorMsg += (e?.reason || e?.message || "Unknown error");
         }
-        
+
         setStatus(errorMsg, "error");
       }
     }
@@ -1809,7 +2034,7 @@
       if (savedStreak) {
         streakDays = parseInt(savedStreak) || 0;
         document.getElementById("streakDays").innerText = streakDays;
-        
+
         if (streakDays >= 7) unlockAchievement("ach3");
       }
     }
@@ -1825,7 +2050,7 @@
         const last = new Date(lastDeposit);
         last.setHours(0, 0, 0, 0);
         const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays === 1) {
           streakDays++;
         } else if (diffDays === 0) {
